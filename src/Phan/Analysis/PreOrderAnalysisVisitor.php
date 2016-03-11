@@ -508,11 +508,16 @@ class PreOrderAnalysisVisitor extends ScopeVisitor
      */
     public function visitIfElem(Node $node) : Context
     {
+        $closure_fqsen =
+            FullyQualifiedFunctionName::fromClosureInContext(
+                $this->context->withLineNumberStart($node->lineno ?? 0)
+            );
+
         // Clone the scope for each branch of a conditional.
         // They'll be merged upon existing all branches.
         $context = $this->context->withScope(
             clone($this->context->getScope())
-        );
+        )->withClosureFQSEN($closure_fqsen);
 
         // Look to see if any proofs we do within the condition
         // can say anything about types within the statement
